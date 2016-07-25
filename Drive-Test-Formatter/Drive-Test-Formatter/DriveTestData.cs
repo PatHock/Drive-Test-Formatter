@@ -31,7 +31,7 @@ namespace Drive_Test_Formatter
                 //if it doesn't have a long/lat field, drop this record
                 if (cellIsNullOrEmpty(lineFields[0]) || cellIsNullOrEmpty(lineFields[1]))
                 {
-                    break;
+                    continue;
                 }
                 if (hasHeaders)
                 {

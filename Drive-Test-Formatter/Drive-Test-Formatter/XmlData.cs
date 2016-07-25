@@ -38,8 +38,12 @@ namespace Drive_Test_Formatter
                 {
                     XElement freq = new XElement("freq", fields[i].Substring(0, fields[i].IndexOf(',')));
                     XElement power = new XElement("power", fields[i+1].Substring(0, fields[i+1].IndexOf(',')));
+                    datapoint.Add(freq);
+                    datapoint.Add(power);
+                    break;
                 }
             }
+            Text = datapoint.ToString();
         }
     }
 }
