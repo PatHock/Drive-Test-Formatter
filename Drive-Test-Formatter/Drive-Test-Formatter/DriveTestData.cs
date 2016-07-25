@@ -11,7 +11,7 @@ namespace Drive_Test_Formatter
         private Dictionary<string, List<string>> data;
         public Dictionary<string, List<string>> Data { get; set; }
         private Boolean hasHeaders;
-        public Boolean HasHeaders { get; }
+        public Boolean HasHeaders { get; set; }
         private string[] headers;
         public string[] Headers { get; set; }
 
