@@ -8,12 +8,14 @@ namespace Drive_Test_Formatter
 {
     class XmlBuilder
     {
-        public static XElement buildXml(List<XElement> nodes, string rootElementName="root"){
-            XElement root = new XElement(rootElementName);
-            foreach(XElement element in nodes){
-                root.Add(element);
+        public static string buildXml(List<XmlData> nodes, string rootElementName="root"){
+            string xml = "<" + rootElementName + ">" + Environment.NewLine;
+            foreach (XmlData data in nodes)
+            {
+                xml += data.Text + Environment.NewLine;
             }
-            return root;
+            xml += "</" + rootElementName + ">";
+            return xml;
         }
     }
 }

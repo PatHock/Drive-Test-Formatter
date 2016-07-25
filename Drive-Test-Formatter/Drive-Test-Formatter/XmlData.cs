@@ -12,6 +12,14 @@ namespace Drive_Test_Formatter
     {
         public string Text { get; set; }
         public int fileIndex { get; set; }
+        private XElement datapoint;
+        private int numColumns;
+        public int NumColumns {
+            get
+            {
+                return numColumns;
+            }
+        }
 
         public XmlData(string csvLine)
         {
@@ -21,7 +29,8 @@ namespace Drive_Test_Formatter
             string[] fields;
             fields = parser.ReadFields();
             parser.Close();
-            XElement datapoint = new XElement("datapoint",
+            numColumns = fields.Length;
+            datapoint = new XElement("datapoint",
                 new XElement("longitude", fields[0]),
                 new XElement("latitude", fields[1]),
                 new XElement("time", fields[2])
