@@ -11,12 +11,12 @@ namespace Drive_Test_Formatter
         private Dictionary<string, List<string>> data;
         public Dictionary<string, List<string>> Data { get; set; }
         private Boolean hasHeaders;
-        public Boolean HasHeaders { get; set; }
+        public Boolean HasHeaders { get; }
         private string[] headers;
         public string[] Headers { get; set; }
 
         public DriveTestData(string inputData, Boolean includesHeaders=true){
-            HasHeaders = includesHeaders;
+            hasHeaders = includesHeaders;
             inputData = normalizeLineEndings(inputData);
             if (HasHeaders)
             {
@@ -29,7 +29,7 @@ namespace Drive_Test_Formatter
             {
                 string[] lineFields = lines[i].Split(',');
                 //if it doesn't have a long/lat field, drop this record
-                if (lineFields[0] == null || lineFields[0] == "\"\"" || lineFields[1] == null || lineFields[2] == "\"\"")
+                if (cellIsNullOrEmpty(lineFields[0]) || cellIsNullOrEmpty(lineFields[1]))
                 {
                     break;
                 }
@@ -70,6 +70,15 @@ namespace Drive_Test_Formatter
                     }
                 }
             }
+        }
+
+        public int getNumNodes()
+        {
+            return (headers.Length - 3) % 2;
+        }
+
+        public Boolean cellIsNullOrEmpty(string cell){
+            return cell == null || cell == "\"\"";
         }
 
         public string normalizeLineEndings(string data)
