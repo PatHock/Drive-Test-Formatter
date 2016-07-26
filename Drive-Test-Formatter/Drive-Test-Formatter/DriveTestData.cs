@@ -46,9 +46,10 @@ namespace Drive_Test_Formatter
 
 
 
-        public string XMLtoCSV()
+        public string[] XMLtoCSV()
         {
             // Take XML formatted drive data and convert to a string in CSV format
+            // Each index in the array represents the CSV for one node
             string[] csvOutputs = new string[this.NumNodesUsed];
             
             for (int i=0; i<this.NumNodesUsed; i++)
@@ -71,7 +72,7 @@ namespace Drive_Test_Formatter
             */
 
             //pls update
-            return csvOutputs[0];
+            return csvOutputs;
 }
 
 
