@@ -23,6 +23,8 @@ namespace Drive_Test_Formatter
             }
         }
         public int NumNodesUsed { get; set; }
+
+        //constructor
         public DriveTestData(string inputData, Boolean hasHeaders=true){
             inputData = normalizeLineEndings(inputData);
             if (hasHeaders) inputData = inputData.Substring(inputData.IndexOf(Environment.NewLine) + 1);
@@ -36,6 +38,7 @@ namespace Drive_Test_Formatter
             }
         }
 
+        //normalize EOL chars to that of the current system
         public string normalizeLineEndings(string data)
         {
             return Regex.Replace(data, @"\r\n|\n\r|\n|\r", Environment.NewLine);

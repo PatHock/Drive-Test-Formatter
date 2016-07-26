@@ -40,6 +40,7 @@ namespace Drive_Test_Formatter
             //if the line is empty, return
             if (fields == null) return;
             numColumns = fields.Length;
+            //if the longitude, latitude, and time fields are all non-null, add them as an XML element
             if (fields[0] != null && fields[0] != "" && fields[1] != null && fields[1] != "" && fields[2] != null && fields[2] != "")
             {
                 datapoint = new XElement("datapoint",
@@ -58,6 +59,7 @@ namespace Drive_Test_Formatter
                     }
                     else
                     {
+                        //add frequency and power as XML elements
                         XElement freq = new XElement("freq", (int)(Double.Parse(fields[i].Substring(0, fields[i].IndexOf(','))) / 1000000));
                         XElement power = new XElement("power", fields[i + 1].Substring(0, fields[i + 1].IndexOf(',')));
                         datapoint.Add(freq);
