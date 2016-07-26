@@ -21,13 +21,23 @@ namespace Drive_Test_Formatter
             }
         }
 
+        public int NumNodesUsed
+        {
+            get
+            {
+                return (numColumns - 3) % 2;
+            }
+        }
+
         public XmlData(string csvLine)
         {
+            //read all the fields of the CSV line
             TextFieldParser parser = new TextFieldParser(new StringReader(csvLine));
             parser.HasFieldsEnclosedInQuotes = true;
             parser.SetDelimiters(",");
             string[] fields = parser.ReadFields();
             parser.Close();
+            //if the line is empty, return
             if (fields == null) return;
             numColumns = fields.Length;
             if (fields[0] != null && fields[0] != "" && fields[1] != null && fields[1] != "" && fields[2] != null && fields[2] != "")
@@ -43,6 +53,7 @@ namespace Drive_Test_Formatter
                 {
                     if (fields[i] == "" || fields[i] == null)
                     {
+                        //columns Frequency and Power are a 2-column pair, so only increment ever OTHER column
                         if (i % 2 != 0) fileIndex++;
                     }
                     else

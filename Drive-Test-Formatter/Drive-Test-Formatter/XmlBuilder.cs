@@ -6,6 +6,9 @@ using System.Xml.Linq;
 
 namespace Drive_Test_Formatter
 {
+    /**
+     * Helper class: compiles a list of XmlData objects' Text (XML nodes) into a single root XML node 
+     **/
     class XmlBuilder
     {
         public static string buildXml(List<XmlData> nodes, string rootElementName="root"){

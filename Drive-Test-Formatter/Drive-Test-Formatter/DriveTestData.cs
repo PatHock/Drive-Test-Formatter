@@ -22,6 +22,7 @@ namespace Drive_Test_Formatter
                 return text;
             }
         }
+        public int NumNodesUsed { get; set; }
         public DriveTestData(string inputData, Boolean hasHeaders=true){
             inputData = normalizeLineEndings(inputData);
             if (hasHeaders) inputData = inputData.Substring(inputData.IndexOf(Environment.NewLine) + 1);
@@ -29,7 +30,9 @@ namespace Drive_Test_Formatter
             XmlNodes = new List<XmlData>();
             foreach (string line in lines)
             {
-                XmlNodes.Add(new XmlData(line));
+                XmlData node = new XmlData(line);
+                NumNodesUsed = node.NumNodesUsed;
+                XmlNodes.Add(node);
             }
         }
 
