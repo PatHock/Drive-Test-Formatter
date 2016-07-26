@@ -68,7 +68,7 @@ namespace Drive_Test_Formatter
                      Environment.NewLine + Regex.Match(XmlNodes[i].Datapoint.Nodes().ToList()[3].ToString(), @"\d{3,4}") + "," +
                      Environment.NewLine + Regex.Match(XmlNodes[i].Datapoint.Nodes().ToList()[1].ToString(), @"-?\d{1,3}\.\d{1,4}"));
             }
-
+            Console.Write(csvOutputs[0]);
             /*
              * foreach (XmlData node in XmlNodes)
             {
