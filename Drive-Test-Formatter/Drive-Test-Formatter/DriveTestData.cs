@@ -63,10 +63,10 @@ namespace Drive_Test_Formatter
             {
                 //TODO: write dank regex 
                 csvOutputs[XmlNodes[i].fileIndex] += (Environment.NewLine + Regex.Match(XmlNodes[i].Datapoint.Nodes().ToList()[0].ToString(), @"-?\d{1,3}\.\d{0,8}") + "," +
-                    + Environment.NewLine + Regex.Match(XmlNodes[i].Datapoint.Nodes().ToList()[1].ToString(), @"-?\d{1,3}\.\d{0,8}") + "," +
-                    + Environment.NewLine + Regex.Match(XmlNodes[i].Datapoint.Nodes().ToList()[2].ToString(), @"\d{1,2}:\d{2}:\d{2}") + "," +
-                    + Environment.NewLine + Regex.Match(XmlNodes[i].Datapoint.Nodes().ToList()[3].ToString(), @"\d{3,4}") + "," +
-                    + Environment.NewLine + Regex.Match(XmlNodes[i].Datapoint.Nodes().ToList()[1].ToString(), @"-?\d{1,3}\.\d{1,4}"));
+                     Environment.NewLine + Regex.Match(XmlNodes[i].Datapoint.Nodes().ToList()[1].ToString(), @"-?\d{1,3}\.\d{0,8}") + "," +
+                     Environment.NewLine + Regex.Match(XmlNodes[i].Datapoint.Nodes().ToList()[2].ToString(), @"\d{1,2}:\d{2}:\d{2}") + "," +
+                     Environment.NewLine + Regex.Match(XmlNodes[i].Datapoint.Nodes().ToList()[3].ToString(), @"\d{3,4}") + "," +
+                     Environment.NewLine + Regex.Match(XmlNodes[i].Datapoint.Nodes().ToList()[1].ToString(), @"-?\d{1,3}\.\d{1,4}"));
             }
 
             /*

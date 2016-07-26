@@ -33,12 +33,12 @@
             this.textBox_FileName = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.btn_beginFormatting = new System.Windows.Forms.Button();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
             // openFileDialog1
             // 
-            this.openFileDialog1.FileName = "openFileDialog1";
-            this.openFileDialog1.Filter = "\"Comma Separated Values|*.csv|All Files|*.*\"";
+            this.openFileDialog1.Filter = "Comma Separated Values|*.csv|All Files|*.*";
             this.openFileDialog1.Multiselect = true;
             // 
             // button1
@@ -63,9 +63,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(13, 13);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(65, 13);
+            this.label1.Size = new System.Drawing.Size(76, 13);
             this.label1.TabIndex = 2;
-            this.label1.Text = "Choose File:";
+            this.label1.Text = "Choose File(s):";
             // 
             // btn_beginFormatting
             // 
@@ -78,17 +78,28 @@
             this.btn_beginFormatting.Visible = false;
             this.btn_beginFormatting.Click += new System.EventHandler(this.btn_beginFormatting_Click);
             // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(12, 105);
+            this.progressBar1.MarqueeAnimationSpeed = 20;
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(435, 23);
+            this.progressBar1.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+            this.progressBar1.TabIndex = 4;
+            this.progressBar1.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(459, 102);
+            this.ClientSize = new System.Drawing.Size(459, 142);
+            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.btn_beginFormatting);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox_FileName);
             this.Controls.Add(this.button1);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Drive Test CSV Formatter";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -101,6 +112,7 @@
         private System.Windows.Forms.TextBox textBox_FileName;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btn_beginFormatting;
+        private System.Windows.Forms.ProgressBar progressBar1;
     }
 }
 

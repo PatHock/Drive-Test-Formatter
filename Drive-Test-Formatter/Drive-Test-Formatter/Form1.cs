@@ -7,14 +7,41 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Drive_Test_Formatter
 {
     public partial class Form1 : Form
     {
         public string[] fileNames;
+        public string FileNamesString
+        {
+            get
+            {
+                string ret = "";
+                if (fileNames.Length > 1)
+                {
+                    foreach (string file in fileNames)
+                    {
+                        ret += file + ";";
+                    }
+                }
+                else
+                {
+                    ret = fileNames[0];
+                }
+                
+                return ret;
+            }
+        }
+        private Logfile log;
+        Dictionary<string, string> failedFiles;
+
         public Form1()
         {
+            Application.EnableVisualStyles();
+            //create the log file 
+            log = new Logfile(".", "errors.log");
             InitializeComponent();
         }
 
@@ -25,47 +52,85 @@ namespace Drive_Test_Formatter
             if (result == DialogResult.OK) // Test result.
             {
                 fileNames = openFileDialog1.FileNames;
-                textBox_FileName.Text = fileNames.ToString();
+                textBox_FileName.Text = FileNamesString;
                 btn_beginFormatting.Visible = true;
             }
         }
 
         private void btn_beginFormatting_Click(object sender, EventArgs e)
         {
+            progressBar1.Show();
+
             btn_beginFormatting.Text = "Working...";
             btn_beginFormatting.Enabled = false;
-            Dictionary<string, string> failedFiles = new Dictionary<string, string>();
-            foreach (string fileName in fileNames)
-            {
-                try
-                {
-                    processFile(fileName);
-                }
-                catch (Exception ex)
-                {
-                    if (ex.Message.Contains("The system could not find the file specified"))
-                    {
-                        failedFiles.Add(fileName, "The system could not find the file specified.");
-                    }
-                    else
-                    {
-                        failedFiles.Add(fileName, "An uncaught exception occurred when trying to write the file.");
-                    }
-                }
-            }
-            if (failedFiles.Count == 0)
-            {
-                MessageBox.Show("All files processed successfully!");
-            }
-            else
-            {
-                string message = "Some files could not be processed or written correctly: " + Environment.NewLine;
-                foreach (string fileName in failedFiles.Keys)
-                {
-                    message += fileName + ":" + Environment.NewLine + failedFiles[fileName] + Environment.NewLine + Environment.NewLine;
-                }
 
-                MessageBox.Show(message);
+            BackgroundWorker workerThread = new BackgroundWorker();
+
+            workerThread.DoWork += bw_DoWork;
+            workerThread.RunWorkerCompleted += bw_RunWorkerCompleted;
+            workerThread.RunWorkerAsync();
+        }
+
+        void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            progressBar1.Hide();
+            btn_beginFormatting.Text = "Begin Formatting";
+            btn_beginFormatting.Enabled = true;
+        }
+
+        private void bw_DoWork(object sender, DoWorkEventArgs e)
+        {
+            processAllFiles();
+        }
+
+        private void processAllFiles()
+        {
+            failedFiles = new Dictionary<string, string>();
+
+            List<Action> actions = new List<Action>();
+            foreach(string file in fileNames)
+            {
+                actions.Add(() => { processFileTask(file); });
+            }
+
+            Parallel.ForEach(actions, new ParallelOptions
+            {
+                MaxDegreeOfParallelism = 8
+            }, action => action());
+
+                if (failedFiles.Count == 0)
+                {
+                    MessageBox.Show("All files processed successfully!");
+                }
+                else
+                {
+                    string message = "Some files could not be processed or written correctly: " + Environment.NewLine;
+                    foreach (string fileName in failedFiles.Keys)
+                    {
+                        message += fileName + ":" + Environment.NewLine + failedFiles[fileName] + Environment.NewLine + Environment.NewLine;
+                    }
+
+                    MessageBox.Show(message);
+                }
+        }
+
+        private void processFileTask(string file)
+        {
+            try
+            {
+                processFile(file);
+            }
+            catch (Exception ex)
+            {
+                log.logException(ex);
+                if (ex.Message.Contains("The system could not find the file specified"))
+                {
+                    failedFiles.Add(file, "The system could not find the file specified.");
+                }
+                else
+                {
+                    failedFiles.Add(file, "An uncaught exception occurred when trying to write the file.");
+                }
             }
         }
 
