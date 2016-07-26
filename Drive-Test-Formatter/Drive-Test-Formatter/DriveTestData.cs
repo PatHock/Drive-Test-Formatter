@@ -51,15 +51,19 @@ namespace Drive_Test_Formatter
             // Take XML formatted drive data and convert to a string in CSV format
             // Each index in the array represents the CSV for one node
             string[] csvOutputs = new string[this.NumNodesUsed];
-            
-            for (int i=0; i<this.NumNodesUsed; i++)
-            {
-                if (i == 0)
-                {
 
-                }
-                else
-                    csvOutputs[i] = Environment.NewLine; // += conversion here
+            //first line is always the same for all CSVs, writes the first line (column names)
+            for (int i=0; i<NumNodesUsed; i++)
+            {
+                csvOutputs[i] = "Position - Longitude (WGS84),Position - Latitude (WGS84),Time,Frequency,Power";
+            }
+
+            // Adds the actual data for each CSV
+            for (int i=0; i<XmlNodes.Count; i++)
+            {
+                // not going to use the variable 'i' here, need to somehow determine which file each XML node belongs to
+                //TODO: write dank regex 
+                csvOutputs[i] = Environment.NewLine; // += conversion here
             }
 
             /*
@@ -67,11 +71,10 @@ namespace Drive_Test_Formatter
             {
                 string csvLine = //convert node.Text to CSV format
             csvOutputs[node.FileIndex].add(csvLine);
-
+            
             }
             */
-
-            //pls update
+            
             return csvOutputs;
 }
 
