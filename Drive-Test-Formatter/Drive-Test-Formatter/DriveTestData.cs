@@ -40,16 +40,34 @@ namespace Drive_Test_Formatter
         {
             return Regex.Replace(data, @"\r\n|\n\r|\n|\r", Environment.NewLine);
         }
-        //public string csvOutputs;
 
-        // Take XML formatted drive data and convert to a string in CSV format
-        List<string>[] csvOutputs = new List<string>[NumNodesUsed]();
-        foreach(List<string> list in csvOutputs){
-	        list = new List<string>();
-        }
-        foreach(XmlData node in XmlNodes){
-	        string csvLine = //convert node.Text to CSV format
-        csvOutputs[node.FileIndex].add(csvLine);
+
+
+        public string XMLtoCSV()
+        {
+            // Take XML formatted drive data and convert to a string in CSV format
+            string[] csvOutputs = new string[this.NumNodesUsed];
+            
+            for (int i=0; i<this.NumNodesUsed; i++)
+            {
+                if (i == 0)
+                {
+
+                }
+                else
+                    csvOutputs[i] += Environment.NewLine; // += conversion here
+            }
+            /*
+             * foreach (XmlData node in XmlNodes)
+            {
+                string csvLine = //convert node.Text to CSV format
+            csvOutputs[node.FileIndex].add(csvLine);
+
+            }
+            */
+
+            //pls update
+            return csvOutputs[0];
 }
 
 
