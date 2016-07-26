@@ -28,14 +28,6 @@ namespace Drive_Test_Formatter
             }
         }
 
-        public int NumNodesUsed
-        {
-            get
-            {
-                return (numColumns - 3) % 2;
-            }
-        }
-
         public XmlData(string csvLine)
         {
             //read all the fields of the CSV line

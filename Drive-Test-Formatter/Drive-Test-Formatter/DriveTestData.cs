@@ -25,16 +25,20 @@ namespace Drive_Test_Formatter
         public int NumNodesUsed { get; set; }
 
         //constructor
-        public DriveTestData(string inputData, Boolean hasHeaders=true){
+        public DriveTestData(string inputData){
             inputData = normalizeLineEndings(inputData);
-            if (hasHeaders) inputData = inputData.Substring(inputData.IndexOf(Environment.NewLine) + 1);
+            string headersLine = inputData.Substring(0, inputData.IndexOf(Environment.NewLine));
+            NumNodesUsed = Regex.Matches(headersLine, "Frequency").Count;
+            inputData = inputData.Substring(inputData.IndexOf(Environment.NewLine) + 1);
             string[] lines = inputData.Split(new string[] {Environment.NewLine}, StringSplitOptions.None);
             XmlNodes = new List<XmlData>();
             foreach (string line in lines)
             {
-                XmlData node = new XmlData(line);
-                NumNodesUsed = node.NumNodesUsed;
-                XmlNodes.Add(node);
+                if (!line.StartsWith("\"\""))
+                {
+                    XmlData node = new XmlData(line);
+                    XmlNodes.Add(node);
+                }
             }
         }
 
@@ -50,7 +54,7 @@ namespace Drive_Test_Formatter
         {
             // Take XML formatted drive data and convert to a string in CSV format
             // Each index in the array represents the CSV for one node
-            string[] csvOutputs = new string[this.NumNodesUsed];
+            string[] csvOutputs = new string[NumNodesUsed];
 
             //first line is always the same for all CSVs, writes the first line (column names)
             for (int i=0; i<NumNodesUsed; i++)
@@ -66,17 +70,8 @@ namespace Drive_Test_Formatter
                      Environment.NewLine + Regex.Match(XmlNodes[i].Datapoint.Nodes().ToList()[1].ToString(), @"-?\d{1,3}\.\d{0,8}") + "," +
                      Environment.NewLine + Regex.Match(XmlNodes[i].Datapoint.Nodes().ToList()[2].ToString(), @"\d{1,2}:\d{2}:\d{2}") + "," +
                      Environment.NewLine + Regex.Match(XmlNodes[i].Datapoint.Nodes().ToList()[3].ToString(), @"\d{3,4}") + "," +
-                     Environment.NewLine + Regex.Match(XmlNodes[i].Datapoint.Nodes().ToList()[1].ToString(), @"-?\d{1,3}\.\d{1,4}"));
+                     Environment.NewLine + Regex.Match(XmlNodes[i].Datapoint.Nodes().ToList()[4].ToString(), @"-?\d{1,3}\.\d{1,4}"));
             }
-
-            /*
-             * foreach (XmlData node in XmlNodes)
-            {
-                string csvLine = //convert node.Text to CSV format
-            csvOutputs[node.FileIndex].add(csvLine);
-            
-            }
-            */
             
             return csvOutputs;
 }
