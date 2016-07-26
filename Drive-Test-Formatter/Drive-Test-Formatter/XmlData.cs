@@ -13,6 +13,13 @@ namespace Drive_Test_Formatter
         public string Text { get; set; }
         public int fileIndex { get; set; }
         private XElement datapoint;
+        public XElement Datapoint
+        {
+            get
+            {
+                return datapoint;
+            }
+        }
         private int numColumns;
         public int NumColumns {
             get

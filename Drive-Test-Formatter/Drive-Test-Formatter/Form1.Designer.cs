@@ -39,6 +39,7 @@
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             this.openFileDialog1.Filter = "\"Comma Separated Values|*.csv|All Files|*.*\"";
+            this.openFileDialog1.Multiselect = true;
             // 
             // button1
             // 
