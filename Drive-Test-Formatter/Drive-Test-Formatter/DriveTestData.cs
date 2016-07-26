@@ -55,8 +55,9 @@ namespace Drive_Test_Formatter
 
                 }
                 else
-                    csvOutputs[i] += Environment.NewLine; // += conversion here
+                    csvOutputs[i] = Environment.NewLine; // += conversion here
             }
+
             /*
              * foreach (XmlData node in XmlNodes)
             {
