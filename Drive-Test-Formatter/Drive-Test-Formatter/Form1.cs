@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace Drive_Test_Formatter
 {
@@ -35,7 +34,6 @@ namespace Drive_Test_Formatter
             }
         }
         private Logfile log;
-        Dictionary<string, string> failedFiles;
 
         public Form1()
         {
@@ -85,53 +83,45 @@ namespace Drive_Test_Formatter
 
         private void processAllFiles()
         {
-            failedFiles = new Dictionary<string, string>();
-
-            List<Action> actions = new List<Action>();
-            foreach(string file in fileNames)
+            Dictionary<string, string> failedFiles = new Dictionary<string, string>();
+            foreach (string fileName in fileNames)
             {
-                actions.Add(() => { processFileTask(file); });
-            }
-
-            Parallel.ForEach(actions, new ParallelOptions
-            {
-                MaxDegreeOfParallelism = 8
-            }, action => action());
-
-                if (failedFiles.Count == 0)
+                try
                 {
-                    MessageBox.Show("All files processed successfully!");
+                    processFile(fileName);
                 }
-                else
+                catch (Exception ex)
                 {
-                    string message = "Some files could not be processed or written correctly: " + Environment.NewLine;
-                    foreach (string fileName in failedFiles.Keys)
+                    log.logException(ex);
+                    if (ex.Message.Contains("The system could not find the file specified"))
                     {
-                        message += fileName + ":" + Environment.NewLine + failedFiles[fileName] + Environment.NewLine + Environment.NewLine;
+                        failedFiles.Add(fileName, "The system could not find the file specified.");
                     }
-
-                    MessageBox.Show(message);
+                    else
+                    {
+                        failedFiles.Add(fileName, "An uncaught exception occurred when trying to write the file.");
+                    }
                 }
+            }
+            if (failedFiles.Count == 0)
+            {
+                MessageBox.Show("All files processed successfully!");
+            }
+            else
+            {
+                string message = "Some files could not be processed or written correctly: " + Environment.NewLine;
+                foreach (string fileName in failedFiles.Keys)
+                {
+                    message += fileName + ":" + Environment.NewLine + failedFiles[fileName] + Environment.NewLine + Environment.NewLine;
+                }
+
+                MessageBox.Show(message);
+            }
         }
 
-        private void processFileTask(string file)
+        private void processFiles(int startFileIndex, int endFileIndex)
         {
-            try
-            {
-                processFile(file);
-            }
-            catch (Exception ex)
-            {
-                log.logException(ex);
-                if (ex.Message.Contains("The system could not find the file specified"))
-                {
-                    failedFiles.Add(file, "The system could not find the file specified.");
-                }
-                else
-                {
-                    failedFiles.Add(file, "An uncaught exception occurred when trying to write the file.");
-                }
-            }
+
         }
 
         private void processFile(string filePath)
@@ -141,18 +131,18 @@ namespace Drive_Test_Formatter
                 string csvData = File.ReadAllText(filePath);
                 DriveTestData driveTestData = new DriveTestData(csvData);
                 string xmlData = driveTestData.XmlText;
-                //string[] formattedCsvFiles = driveTestData.XMLtoCSV();
+                string[] formattedCsvFiles = driveTestData.XMLtoCSV();
                 if (!Directory.Exists(filePath + @".output"))
                 {
                     Directory.CreateDirectory(filePath + @".output");
                 }
                 try
                 {
-                    File.WriteAllText(filePath + @".output\output.xml", xmlData);
-                   // for (int i = 0; i < formattedCsvFiles.Length; i++)
-                   // {
-                   //     File.WriteAllText(filePath + @".output\output_" + i + ".csv", formattedCsvFiles[i]);
-                  //  }
+                    //File.WriteAllText(filePath + @".output\output.xml", xmlData);
+                    for (int i = 0; i < formattedCsvFiles.Length; i++)
+                    {
+                        File.WriteAllText(filePath + @".output\output_" + i + ".csv", formattedCsvFiles[i]);
+                    }
                 }
                 catch (Exception ex)
                 {
