@@ -97,6 +97,10 @@ namespace Drive_Test_Formatter
                     {
                         failedFiles.Add(fileName, "The system could not find the file specified.");
                     }
+                    else if (ex.Message.Contains("it is being used by another process"))
+                    {
+                        failedFiles.Add(fileName, ex.Message);
+                    }
                     else
                     {
                         failedFiles.Add(fileName, "An uncaught exception occurred when trying to write the file.");
@@ -117,11 +121,6 @@ namespace Drive_Test_Formatter
 
                 MessageBox.Show(message);
             }
-        }
-
-        private void processFiles(int startFileIndex, int endFileIndex)
-        {
-
         }
 
         private void processFile(string filePath)

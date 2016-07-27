@@ -59,24 +59,27 @@ namespace Drive_Test_Formatter
             //first line is always the same for all CSVs, writes the first line (column names)
             for (int i=0; i<NumNodesUsed; i++)
             {
-                csvOutputs[i] = "Position - Longitude (WGS84),Position - Latitude (WGS84),Time,Frequency,Power";
+                csvOutputs[i] = "Position - Longitude (WGS84),Position - Latitude (WGS84), Time, Frequency, Power" + Environment.NewLine;
             }
 
             // Adds the actual data for each CSV
             for (int i=0; i<XmlNodes.Count; i++)
             {
-                //TODO: write dank regex
-                csvOutputs[XmlNodes[i].fileIndex] += (Environment.NewLine + Regex.Match(XmlNodes[i].Datapoint.Nodes().ToList()[0].ToString(), @"-?\d{1,3}\.\d{0,8}") + "," +
-                     Environment.NewLine + Regex.Match(XmlNodes[i].Datapoint.Nodes().ToList()[1].ToString(), @"-?\d{1,3}\.\d{0,8}") + "," +
-                     Environment.NewLine + Regex.Match(XmlNodes[i].Datapoint.Nodes().ToList()[2].ToString(), @"\d{1,2}:\d{2}:\d{2}") + "," +
-                     Environment.NewLine + Regex.Match(XmlNodes[i].Datapoint.Nodes().ToList()[3].ToString(), @"\d{3,4}") + "," +
-                     Environment.NewLine + Regex.Match(XmlNodes[i].Datapoint.Nodes().ToList()[4].ToString(), @"-?\d{1,3}\.\d{1,4}"));
+                if (XmlNodes[i].Datapoint != null)
+                {
+                    List<XNode> nodes = XmlNodes[i].Datapoint.Nodes().ToList();
+                    if (nodes != null)
+                    {
+                        //TODO: write dank regex
+                        csvOutputs[XmlNodes[i].fileIndex] += (Regex.Match(nodes[0].ToString(), @"-?\d{1,3}\.\d{0,8}") + "," +
+                             Regex.Match(nodes[1].ToString(), @"-?\d{1,3}\.\d{0,8}") + "," +
+                             Regex.Match(nodes[2].ToString(), @"\d{1,2}:\d{2}:\d{2}") + "," +
+                             Regex.Match(nodes[3].ToString(), @"\d{3,4}") + "," +
+                             Regex.Match(nodes[4].ToString(), @"-?\d{1,3}\.\d{1,4}")) + "," + Environment.NewLine;
+                    }
+                }
             }
-
             return csvOutputs;
-}
-
-
-
+        }
     }
 }
