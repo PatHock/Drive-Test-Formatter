@@ -51,7 +51,17 @@ namespace Drive_Test_Formatter
             }
 
             if (this.textBox_outputFilenamePrefix.Text == null) filenameParams[0] = "";
-            else filenameParams[0] = this.textBox_outputFilenamePrefix.Text;
+            else
+            {
+                if (this.textBox_outputFilenamePrefix.Text != null && this.textBox_outputFilenamePrefix.Text != "")
+                {
+                    filenameParams[0] = this.textBox_outputFilenamePrefix.Text + "-";
+                }
+                else
+                {
+                    filenameParams[0] = "";
+                }
+            }
 
             if (this.cb_includeDate.Checked)
             {

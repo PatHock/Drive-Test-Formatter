@@ -216,13 +216,15 @@ namespace Drive_Test_Formatter
                     //File.WriteAllText(filePath + @".output\output.xml", xmlData);
                     for (int i = 0; i < formattedCsvFiles.Length; i++)
                     {
-                        string outputFilename = thisFilenameParams[0];
+                        string headersRemoved = formattedCsvFiles[i].Substring(formattedCsvFiles[i].IndexOf(Environment.NewLine) + 2);
+                        string frequency = headersRemoved.Substring(0, headersRemoved.IndexOf(','));
+                        string outputFilename = frequency + "MHz-" + thisFilenameParams[0];
                         //int ToString("D3") pads the int with leading zeros making it 3 digits total
-                        outputFilename += "-" + (i + 1).ToString("D3");
+                        outputFilename += (i + 1).ToString("D3");
                         if (thisFilenameParams[1] == "true") outputFilename += "-" + DateTime.Now.ToString("MM-dd-yyyy");
                         else if (thisFilenameParams[1] == "specify")
                         {
-                            outputFilename += "-" + thisFilenameParams[2];
+                            outputFilename += thisFilenameParams[2];
                         }
                         outputFilename += ".csv";
                         File.WriteAllText(filePath + @".output\" + outputFilename, formattedCsvFiles[i]);
