@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Drive_Test_Formatter
 {
@@ -78,7 +79,51 @@ namespace Drive_Test_Formatter
 
         private void bw_DoWork(object sender, DoWorkEventArgs e)
         {
-            processAllFiles();
+            processAllFilesInParallel();
+        }
+
+        private void processAllFilesInParallel()
+        {
+            Dictionary<string, string> failedFiles = new Dictionary<string, string>();
+            //Parallelize file processing
+            Parallel.ForEach(fileNames, fileName => 
+                {
+                    try
+                    {
+                        processFile(fileName);
+                    }
+                    catch (Exception ex)
+                    {
+                        log.logException(ex);
+                        if (ex.Message.Contains("The system could not find the file specified"))
+                        {
+                            failedFiles.Add(fileName, "The system could not find the file specified.");
+                        }
+                        else if (ex.Message.Contains("it is being used by another process"))
+                        {
+                            failedFiles.Add(fileName, ex.Message);
+                        }
+                        else
+                        {
+                            failedFiles.Add(fileName, "An uncaught exception occurred when trying to write the file.");
+                        }
+                    }
+                });
+            //if all files were processed successfully, inform the user; else, show error message(s)
+            if (failedFiles.Count == 0)
+            {
+                MessageBox.Show("All files processed successfully!");
+            }
+            else
+            {
+                string message = "Some files could not be processed or written correctly: " + Environment.NewLine;
+                foreach (string fileName in failedFiles.Keys)
+                {
+                    message += fileName + ": " + failedFiles[fileName] + Environment.NewLine + Environment.NewLine;
+                }
+
+                MessageBox.Show(message);
+            }
         }
 
         private void processAllFiles()

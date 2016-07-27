@@ -71,10 +71,10 @@ namespace Drive_Test_Formatter
                     if (nodes != null)
                     {
                         //TODO: write dank regex
-                        csvOutputs[XmlNodes[i].fileIndex] += (Regex.Match(nodes[0].ToString(), @"-?\d{1,3}\.\d{0,8}") + "," +
-                             Regex.Match(nodes[1].ToString(), @"-?\d{1,3}\.\d{0,8}") + "," +
-                             Regex.Match(nodes[2].ToString(), @"\d{1,2}:\d{2}:\d{2}") + "," +
-                             Regex.Match(nodes[3].ToString(), @"\d{3,4}") + "," +
+                        csvOutputs[XmlNodes[i].fileIndex] += (Regex.Match(nodes[0].ToString(), @"-?\d{1,3}\.\d{0,8}") + ", " +
+                             Regex.Match(nodes[1].ToString(), @"-?\d{1,3}\.\d{0,8}") + ", " +
+                             Regex.Match(nodes[2].ToString(), @"\d{1,2}:\d{2}:\d{2}") + ", " +
+                             Regex.Match(nodes[3].ToString(), @"\d{3,4}") + ", " +
                              Regex.Match(nodes[4].ToString(), @"-?\d{1,3}\.\d{1,4}")) + "," + Environment.NewLine;
                     }
                 }
