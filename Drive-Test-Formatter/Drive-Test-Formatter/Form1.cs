@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Drive_Test_Formatter
 {
@@ -33,6 +34,7 @@ namespace Drive_Test_Formatter
                 return ret;
             }
         }
+        private Dictionary<string, string[]> filenameParams;
         private Logfile log;
 
         public Form1()
@@ -50,6 +52,7 @@ namespace Drive_Test_Formatter
             if (result == DialogResult.OK) // Test result.
             {
                 fileNames = openFileDialog1.FileNames;
+                filenameParams = new Dictionary<string, string[]>(); ;
                 textBox_FileName.Text = FileNamesString;
                 btn_beginFormatting.Visible = true;
             }
@@ -61,12 +64,38 @@ namespace Drive_Test_Formatter
 
             btn_beginFormatting.Text = "Working...";
             btn_beginFormatting.Enabled = false;
+            button1.Enabled = false;
+            textBox_FileName.Enabled = false;
 
-            BackgroundWorker workerThread = new BackgroundWorker();
+            Boolean allOk = true;
 
-            workerThread.DoWork += bw_DoWork;
-            workerThread.RunWorkerCompleted += bw_RunWorkerCompleted;
-            workerThread.RunWorkerAsync();
+            for(int i = 0; i < fileNames.Length; i ++)
+            {
+                NamingOptionsForm nameOptionsForm = new NamingOptionsForm(fileNames[i]);
+                var result = nameOptionsForm.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    filenameParams[fileNames[i]] = nameOptionsForm.filenameParams;
+                }
+                else allOk = false;
+            }
+
+            if (allOk)
+            {
+                BackgroundWorker workerThread = new BackgroundWorker();
+
+                workerThread.DoWork += bw_DoWork;
+                workerThread.RunWorkerCompleted += bw_RunWorkerCompleted;
+                workerThread.RunWorkerAsync();
+            }
+            else
+            {
+                progressBar1.Hide();
+                btn_beginFormatting.Text = "Begin Formatting";
+                btn_beginFormatting.Enabled = true;
+                button1.Enabled = true;
+                textBox_FileName.Enabled = true;
+            }
         }
 
         void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -74,11 +103,57 @@ namespace Drive_Test_Formatter
             progressBar1.Hide();
             btn_beginFormatting.Text = "Begin Formatting";
             btn_beginFormatting.Enabled = true;
+            button1.Enabled = true;
+            textBox_FileName.Enabled = true;
         }
 
         private void bw_DoWork(object sender, DoWorkEventArgs e)
         {
-            processAllFiles();
+            processAllFilesInParallel();
+        }
+
+        private void processAllFilesInParallel()
+        {
+            Dictionary<string, string> failedFiles = new Dictionary<string, string>();
+            //Parallelize file processing
+            Parallel.ForEach(fileNames, fileName => 
+                {
+                    try
+                    {
+                        processFile(fileName);
+                    }
+                    catch (Exception ex)
+                    {
+                        log.logException(ex);
+                        if (ex.Message.Contains("The system could not find the file specified"))
+                        {
+                            failedFiles.Add(fileName, "The system could not find the file specified.");
+                        }
+                        else if (ex.Message.Contains("it is being used by another process"))
+                        {
+                            failedFiles.Add(fileName, ex.Message);
+                        }
+                        else
+                        {
+                            failedFiles.Add(fileName, "An uncaught exception occurred when trying to write the file.");
+                        }
+                    }
+                });
+            //if all files were processed successfully, inform the user; else, show error message(s)
+            if (failedFiles.Count == 0)
+            {
+                MessageBox.Show("All files processed successfully!");
+            }
+            else
+            {
+                string message = "Some files could not be processed or written correctly: " + Environment.NewLine;
+                foreach (string fileName in failedFiles.Keys)
+                {
+                    message += fileName + ": " + failedFiles[fileName] + Environment.NewLine + Environment.NewLine;
+                }
+
+                MessageBox.Show(message);
+            }
         }
 
         private void processAllFiles()
@@ -96,6 +171,10 @@ namespace Drive_Test_Formatter
                     if (ex.Message.Contains("The system could not find the file specified"))
                     {
                         failedFiles.Add(fileName, "The system could not find the file specified.");
+                    }
+                    else if (ex.Message.Contains("it is being used by another process"))
+                    {
+                        failedFiles.Add(fileName, ex.Message);
                     }
                     else
                     {
@@ -119,15 +198,11 @@ namespace Drive_Test_Formatter
             }
         }
 
-        private void processFiles(int startFileIndex, int endFileIndex)
-        {
-
-        }
-
         private void processFile(string filePath)
         {
             if (File.Exists(filePath))
             {
+                string[] thisFilenameParams = filenameParams[filePath];
                 string csvData = File.ReadAllText(filePath);
                 DriveTestData driveTestData = new DriveTestData(csvData);
                 string xmlData = driveTestData.XmlText;
@@ -141,7 +216,18 @@ namespace Drive_Test_Formatter
                     //File.WriteAllText(filePath + @".output\output.xml", xmlData);
                     for (int i = 0; i < formattedCsvFiles.Length; i++)
                     {
-                        File.WriteAllText(filePath + @".output\output_" + i + ".csv", formattedCsvFiles[i]);
+                        string headersRemoved = formattedCsvFiles[i].Substring(formattedCsvFiles[i].IndexOf(Environment.NewLine) + 2);
+                        string frequency = headersRemoved.Substring(0, headersRemoved.IndexOf(','));
+                        string outputFilename = frequency + "MHz-" + thisFilenameParams[0];
+                        //int ToString("D3") pads the int with leading zeros making it 3 digits total
+                        outputFilename += (i + 1).ToString("D3");
+                        if (thisFilenameParams[1] == "true") outputFilename += "-" + DateTime.Now.ToString("MM-dd-yyyy");
+                        else if (thisFilenameParams[1] == "specify")
+                        {
+                            outputFilename += thisFilenameParams[2];
+                        }
+                        outputFilename += ".csv";
+                        File.WriteAllText(filePath + @".output\" + outputFilename, formattedCsvFiles[i]);
                     }
                 }
                 catch (Exception ex)
